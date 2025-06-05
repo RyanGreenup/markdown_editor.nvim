@@ -5,6 +5,7 @@ local config = require("markdown_editor.config")
 local headings = require("markdown_editor.headings")
 local reorder = require("markdown_editor.reorder")
 local links = require("markdown_editor.links")
+local navigation = require("markdown_editor.navigation")
 
 ---Demote a markdown heading (increase level number)
 function M.demote_heading()
@@ -50,6 +51,31 @@ end
 ---@param visual_mode boolean|nil Whether called from visual mode
 function M.smart_link(visual_mode)
   links.smart_link(visual_mode)
+end
+
+---Navigate to the next heading at the same level
+function M.next_sibling_heading()
+  navigation.next_sibling_heading()
+end
+
+---Navigate to the previous heading at the same level
+function M.previous_sibling_heading()
+  navigation.previous_sibling_heading()
+end
+
+---Navigate to the next heading at any level
+function M.next_heading()
+  navigation.next_heading()
+end
+
+---Navigate to the previous heading at any level
+function M.previous_heading()
+  navigation.previous_heading()
+end
+
+---Navigate to the parent heading
+function M.parent_heading()
+  navigation.parent_heading()
 end
 
 ---Setup plugin commands
@@ -125,6 +151,37 @@ function M.setup(opts)
   end, {
     range = true,
     desc = "Create or edit markdown link based on cursor context",
+  })
+  
+  -- Navigation commands
+  vim.api.nvim_create_user_command("MarkdownEditorNextSiblingHeading", function()
+    M.next_sibling_heading()
+  end, {
+    desc = "Navigate to next heading at same level",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorPreviousSiblingHeading", function()
+    M.previous_sibling_heading()
+  end, {
+    desc = "Navigate to previous heading at same level",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorNextHeading", function()
+    M.next_heading()
+  end, {
+    desc = "Navigate to next heading at any level",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorPreviousHeading", function()
+    M.previous_heading()
+  end, {
+    desc = "Navigate to previous heading at any level",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorParentHeading", function()
+    M.parent_heading()
+  end, {
+    desc = "Navigate to parent heading",
   })
 end
 
