@@ -2,7 +2,7 @@
 -- Copy this configuration to your lazy.nvim setup
 
 return {
-  "ryangreenup/markdown_editor.",
+  "ryangreenup/markdown_editor.nvim",
   config = function()
     require("markdown_editor").setup({
       greeting = "Hello from MarkdownEditor!",
