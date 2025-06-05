@@ -178,38 +178,44 @@ The plugin provides several navigation functions to move between headings:
 
 ### Folding
 
-The plugin provides org-mode style folding that cycles through different fold states:
+The plugin provides org-mode style folding that cycles through 3 states:
 
 **Fold Cycling** (`<S-Tab>`):
-- Progressively folds headings from level 1 to 6
-- Cycles through: All Open → Level 1 → Level 2 → ... → Level 6 → All Closed → All Open
+- Cycles through: Show All → Overview → Contents → Show All
+- Matches org-mode's TAB cycling behavior
 
 **Folding Behavior:**
-- Only headings are foldable (content under headings gets folded)
+- Uses treesitter for accurate heading detection
 - Maintains cursor position during fold cycling
 - Automatically sets up folding when opening markdown files
-- Uses treesitter for accurate heading detection
 
-**Fold States:**
-1. **All Open**: All content visible
-2. **Level 1**: Only level 1 headings visible, everything else folded
-3. **Level 2**: Level 1-2 headings visible, level 3+ folded
-4. **Level 3**: Level 1-3 headings visible, level 4+ folded
-5. **Level 4**: Level 1-4 headings visible, level 5+ folded
-6. **Level 5**: Level 1-5 headings visible, level 6 folded
-7. **Level 6**: All headings visible, only content folded
-8. **All Closed**: Everything folded
+**3 Fold States:**
 
-**Example:**
-
+1. **Show All**: Everything expanded and visible
 ```markdown
-# Document               <- Always visible
-## Section A             <- Folded at Level 1
-### Subsection A1        <- Folded at Level 2
-Content here...          <- Folded with parent heading
-### Subsection A2        <- Folded at Level 2
-## Section B             <- Folded at Level 1
-### Subsection B1        <- Folded at Level 2
+# A
+Lorem ipsum dolor sit
+## B
+Lorem ipsum dolor sit
+### C
+Lorem ipsum dolor sit
 ```
+
+2. **Overview**: Only top-level headings visible, everything else folded
+```markdown
+# A [...]
+```
+
+3. **Contents**: All headings visible, content under headings folded
+```markdown
+# A [...]
+## B [...]
+### C [...]
+```
+
+**Usage:**
+- Press `<S-Tab>` repeatedly to cycle through the states
+- Each press moves to the next fold state
+- Perfect for getting document overview or focusing on structure
 
 

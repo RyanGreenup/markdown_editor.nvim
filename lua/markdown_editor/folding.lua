@@ -70,53 +70,79 @@ local function find_section_end(start_line, heading_level)
   return total_lines
 end
 
----Get the current fold state of the buffer
----@return string state Current fold state: "all_open", "level_1", "level_2", etc., or "all_closed"
+---Get the current fold state of the buffer (3-state system)
+---@return string state Current fold state: "overview", "contents", or "show_all"
 local function get_current_fold_state()
   local headings = get_all_headings()
   if #headings == 0 then
-    return "all_open"
+    return "show_all"
   end
   
-  local level_folded = {}
-  local any_open = false
+  local level1_folded = true
+  local all_headings_folded = true
+  local any_folds = false
   
-  -- Check each heading to see if it's folded
+  -- Check the state of level 1 headings and all headings
   for _, heading in ipairs(headings) do
     local fold_closed = vim.fn.foldclosed(heading.line) ~= -1
+    
     if fold_closed then
-      level_folded[heading.level] = true
+      any_folds = true
+      if heading.level > 1 then
+        -- If any non-level-1 heading is folded, we might be in contents state
+      end
     else
-      any_open = true
+      all_headings_folded = false
+      if heading.level == 1 then
+        level1_folded = false
+      end
     end
   end
   
-  -- Determine the current state
-  if not any_open then
-    return "all_closed"
+  -- Determine state based on fold patterns
+  if not any_folds then
+    return "show_all"
   end
   
-  -- Check if specific levels are consistently folded
-  for level = 1, 6 do
-    local all_level_folded = true
-    local has_level = false
-    
+  -- Check if we're in overview state (only level 1 headings visible)
+  if level1_folded then
+    -- Check if level 1 headings have their content folded
+    local level1_content_folded = false
     for _, heading in ipairs(headings) do
-      if heading.level == level then
-        has_level = true
-        if vim.fn.foldclosed(heading.line) == -1 then
-          all_level_folded = false
+      if heading.level == 1 then
+        local fold_closed = vim.fn.foldclosed(heading.line) ~= -1
+        if fold_closed then
+          level1_content_folded = true
           break
         end
       end
     end
     
-    if has_level and all_level_folded then
-      return "level_" .. level
+    if level1_content_folded then
+      return "overview"
     end
   end
   
-  return "all_open"
+  -- Check if we're in contents state (all headings visible, content folded)
+  local content_folded = false
+  for _, heading in ipairs(headings) do
+    -- Check if there's content after this heading that should be folded
+    local end_line = find_section_end(heading.line, heading.level)
+    if end_line > heading.line then
+      -- There's content, check if it's folded
+      local fold_closed = vim.fn.foldclosed(heading.line) ~= -1
+      if fold_closed then
+        content_folded = true
+        break
+      end
+    end
+  end
+  
+  if content_folded and not all_headings_folded then
+    return "contents"
+  end
+  
+  return "show_all"
 end
 
 ---Set up markdown folding based on headings
@@ -155,34 +181,56 @@ function M.fold_text()
   return cleaned_line .. suffix
 end
 
----Fold all headings at a specific level and below
----@param max_level number Maximum level to keep open (1-6)
-local function fold_to_level(max_level)
+---Set to overview state: only top-level headings visible
+local function set_overview_state()
   local headings = get_all_headings()
   
   -- First, open all folds
   vim.cmd("normal! zR")
   
-  -- Then close folds for headings at level > max_level
+  -- Find level 1 headings and fold everything under them
   for _, heading in ipairs(headings) do
-    if heading.level > max_level then
+    if heading.level == 1 then
       vim.api.nvim_win_set_cursor(0, { heading.line, 0 })
       vim.cmd("normal! zc")
     end
   end
 end
 
----Close all folds
-local function close_all_folds()
-  vim.cmd("normal! zM")
+---Set to contents state: all headings visible, content folded
+local function set_contents_state()
+  local headings = get_all_headings()
+  
+  -- First, open all folds
+  vim.cmd("normal! zR")
+  
+  -- For each heading, if it has content (non-heading lines), fold just the content
+  for _, heading in ipairs(headings) do
+    local end_line = find_section_end(heading.line, heading.level)
+    
+    -- Check if there's content (non-heading lines) in this section
+    local has_content = false
+    for line_num = heading.line + 1, end_line do
+      if not get_heading_level_at_line(line_num) then
+        has_content = true
+        break
+      end
+    end
+    
+    -- If there's content, create a fold that includes the heading and its content
+    if has_content then
+      vim.api.nvim_win_set_cursor(0, { heading.line, 0 })
+      vim.cmd("normal! zc")
+    end
+  end
 end
 
----Open all folds
-local function open_all_folds()
+---Set to show all state: everything expanded
+local function set_show_all_state()
   vim.cmd("normal! zR")
 end
 
----Cycle through fold states like org-mode
+---Cycle through fold states like org-mode (3-state system)
 ---@return boolean success Whether the operation was successful
 function M.cycle_fold()
   -- Set up folding if not already configured
@@ -197,31 +245,16 @@ function M.cycle_fold()
   
   local current_state = get_current_fold_state()
   
-  -- Cycle through states: all_open -> level_1 -> level_2 -> ... -> all_closed -> all_open
-  if current_state == "all_open" then
-    fold_to_level(1)
-    vim.notify("Folded to level 1", vim.log.levels.INFO, { title = "MarkdownEditor" })
-  elseif current_state == "level_1" then
-    fold_to_level(2)
-    vim.notify("Folded to level 2", vim.log.levels.INFO, { title = "MarkdownEditor" })
-  elseif current_state == "level_2" then
-    fold_to_level(3)
-    vim.notify("Folded to level 3", vim.log.levels.INFO, { title = "MarkdownEditor" })
-  elseif current_state == "level_3" then
-    fold_to_level(4)
-    vim.notify("Folded to level 4", vim.log.levels.INFO, { title = "MarkdownEditor" })
-  elseif current_state == "level_4" then
-    fold_to_level(5)
-    vim.notify("Folded to level 5", vim.log.levels.INFO, { title = "MarkdownEditor" })
-  elseif current_state == "level_5" then
-    fold_to_level(6)
-    vim.notify("Folded to level 6", vim.log.levels.INFO, { title = "MarkdownEditor" })
-  elseif current_state == "level_6" then
-    close_all_folds()
-    vim.notify("All headings folded", vim.log.levels.INFO, { title = "MarkdownEditor" })
-  else  -- all_closed or any other state
-    open_all_folds()
-    vim.notify("All folds opened", vim.log.levels.INFO, { title = "MarkdownEditor" })
+  -- Cycle through 3 states: show_all -> overview -> contents -> show_all
+  if current_state == "show_all" then
+    set_overview_state()
+    vim.notify("Overview: Only top-level headings visible", vim.log.levels.INFO, { title = "MarkdownEditor" })
+  elseif current_state == "overview" then
+    set_contents_state()
+    vim.notify("Contents: All headings visible, content folded", vim.log.levels.INFO, { title = "MarkdownEditor" })
+  else  -- contents or any other state
+    set_show_all_state()
+    vim.notify("Show all: Everything expanded", vim.log.levels.INFO, { title = "MarkdownEditor" })
   end
   
   return true
