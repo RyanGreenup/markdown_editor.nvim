@@ -2,7 +2,7 @@
 -- Copy this configuration to your lazy.nvim setup
 
 return {
-  "your-username/myplugin.nvim",
+  "ryangreenup/nvim-plugin-template",
   config = function()
     require("myplugin").setup({
       greeting = "Hello from MyPlugin!",
