@@ -3,6 +3,7 @@ local M = {}
 
 local config = require("markdown_editor.config")
 local headings = require("markdown_editor.headings")
+local reorder = require("markdown_editor.reorder")
 
 ---Demote a markdown heading (increase level number)
 function M.demote_heading()
@@ -32,6 +33,16 @@ end
 ---Insert a child heading one level deeper than the nearest parent heading
 function M.insert_child_heading()
   headings.insert_child_heading()
+end
+
+---Move current heading up (swap with previous sibling)
+function M.move_heading_up()
+  reorder.move_heading_up()
+end
+
+---Move current heading down (swap with next sibling)
+function M.move_heading_down()
+  reorder.move_heading_down()
 end
 
 ---Setup plugin commands
@@ -86,6 +97,18 @@ function M.setup(opts)
     M.insert_child_heading()
   end, {
     desc = "Insert a child heading one level deeper than the nearest parent",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorMoveHeadingUp", function()
+    M.move_heading_up()
+  end, {
+    desc = "Move current heading up (swap with previous sibling)",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorMoveHeadingDown", function()
+    M.move_heading_down()
+  end, {
+    desc = "Move current heading down (swap with next sibling)",
   })
 end
 
