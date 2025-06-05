@@ -13,7 +13,7 @@ A minimal, template for creating Neovim plugins in Lua with lazy.nvim support.
 
 1. Create a git repository for the plugin
 2. Clone this repo
-3. Run `just init '<plugin_name>.nvim' '<username>' 'https://github.com/<username>/<plugin_name>.nvim'
+3. Run `just init '<plugin_name>' '<username>' 'https://github.com/<username>/<plugin_name>.nvim'
 
 ## Overview
 
