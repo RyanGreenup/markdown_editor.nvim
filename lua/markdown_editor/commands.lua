@@ -6,6 +6,7 @@ local headings = require("markdown_editor.headings")
 local reorder = require("markdown_editor.reorder")
 local links = require("markdown_editor.links")
 local navigation = require("markdown_editor.navigation")
+local folding = require("markdown_editor.folding")
 
 ---Demote a markdown heading (increase level number)
 function M.demote_heading()
@@ -76,6 +77,11 @@ end
 ---Navigate to the parent heading
 function M.parent_heading()
   navigation.parent_heading()
+end
+
+---Cycle fold state of headings (org-mode style)
+function M.cycle_fold()
+  folding.cycle_fold()
 end
 
 ---Setup plugin commands
@@ -182,6 +188,21 @@ function M.setup(opts)
     M.parent_heading()
   end, {
     desc = "Navigate to parent heading",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorCycleFold", function()
+    M.cycle_fold()
+  end, {
+    desc = "Cycle fold state of headings (org-mode style)",
+  })
+  
+  -- Set up folding for markdown files
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "markdown", "rmd" },
+    group = vim.api.nvim_create_augroup("MarkdownEditorFolding", { clear = true }),
+    callback = function()
+      folding.setup_buffer_folding()
+    end,
   })
 end
 

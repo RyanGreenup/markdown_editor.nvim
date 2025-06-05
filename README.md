@@ -22,6 +22,7 @@ This plugin provides tree sitter based keybindings to edit markdown documents. M
 | `<C-c><C-f>` | `next_heading()` | Navigate to next heading (any level) |
 | `<C-c><C-b>` | `previous_heading()` | Navigate to previous heading (any level) |
 | `<C-c><C-u>` | `parent_heading()` | Navigate to parent heading |
+| `<S-Tab>` | `cycle_fold()` | Cycle fold state (org-mode style) |
 
 
 
@@ -104,6 +105,11 @@ This plugin provides tree sitter based keybindings to edit markdown documents. M
         vim.keymap.set("n", "<C-c><C-u>", function()
           require("markdown_editor.navigation").parent_heading()
         end, vim.tbl_extend("force", opts, { desc = "Parent heading" }))
+        
+        -- Folding
+        vim.keymap.set("n", "<S-Tab>", function()
+          require("markdown_editor.folding").cycle_fold()
+        end, vim.tbl_extend("force", opts, { desc = "Cycle fold state" }))
       end,
     })
   end,
@@ -168,6 +174,42 @@ The plugin provides several navigation functions to move between headings:
 ## Section B         <- current position, next_sibling_heading() goes to Section C
 ### Subsection B1    
 ## Section C         <- next_sibling_heading() from Section B
+```
+
+### Folding
+
+The plugin provides org-mode style folding that cycles through different fold states:
+
+**Fold Cycling** (`<S-Tab>`):
+- Progressively folds headings from level 1 to 6
+- Cycles through: All Open → Level 1 → Level 2 → ... → Level 6 → All Closed → All Open
+
+**Folding Behavior:**
+- Only headings are foldable (content under headings gets folded)
+- Maintains cursor position during fold cycling
+- Automatically sets up folding when opening markdown files
+- Uses treesitter for accurate heading detection
+
+**Fold States:**
+1. **All Open**: All content visible
+2. **Level 1**: Only level 1 headings visible, everything else folded
+3. **Level 2**: Level 1-2 headings visible, level 3+ folded
+4. **Level 3**: Level 1-3 headings visible, level 4+ folded
+5. **Level 4**: Level 1-4 headings visible, level 5+ folded
+6. **Level 5**: Level 1-5 headings visible, level 6 folded
+7. **Level 6**: All headings visible, only content folded
+8. **All Closed**: Everything folded
+
+**Example:**
+
+```markdown
+# Document               <- Always visible
+## Section A             <- Folded at Level 1
+### Subsection A1        <- Folded at Level 2
+Content here...          <- Folded with parent heading
+### Subsection A2        <- Folded at Level 2
+## Section B             <- Folded at Level 1
+### Subsection B1        <- Folded at Level 2
 ```
 
 
