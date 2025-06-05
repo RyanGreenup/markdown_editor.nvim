@@ -16,6 +16,7 @@ This plugin provides tree sitter based keybindings to edit markdown documents. M
 | `<C-h>` | `promote_heading()` | Promote only the current heading |
 | `<M-Up>` | `move_heading_up()` | Swap heading with sibling above |
 | `<M-Down>` | `move_heading_down()` | Swap heading with sibling below |
+| `<C-c><C-l>` | `smart_link()` | Create or edit markdown link |
 
 
 
@@ -68,6 +69,11 @@ This plugin provides tree sitter based keybindings to edit markdown documents. M
         vim.keymap.set("n", "<M-Down>", function()
           require("markdown_editor.reorder").move_heading_down()
         end, vim.tbl_extend("force", opts, { desc = "Move heading down" }))
+        
+        -- Link Management
+        vim.keymap.set("n", "<C-c><C-l>", function()
+          require("markdown_editor.links").smart_link()
+        end, vim.tbl_extend("force", opts, { desc = "Create or edit markdown link" }))
       end,
     })
   end,

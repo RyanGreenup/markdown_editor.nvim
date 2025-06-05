@@ -4,6 +4,7 @@ local M = {}
 local config = require("markdown_editor.config")
 local headings = require("markdown_editor.headings")
 local reorder = require("markdown_editor.reorder")
+local links = require("markdown_editor.links")
 
 ---Demote a markdown heading (increase level number)
 function M.demote_heading()
@@ -43,6 +44,11 @@ end
 ---Move current heading down (swap with next sibling)
 function M.move_heading_down()
   reorder.move_heading_down()
+end
+
+---Smart link function that creates or edits links based on cursor context
+function M.smart_link()
+  links.smart_link()
 end
 
 ---Setup plugin commands
@@ -109,6 +115,12 @@ function M.setup(opts)
     M.move_heading_down()
   end, {
     desc = "Move current heading down (swap with next sibling)",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorSmartLink", function()
+    M.smart_link()
+  end, {
+    desc = "Create or edit markdown link based on cursor context",
   })
 end
 
