@@ -14,6 +14,16 @@ function M.promote_heading()
   headings.promote_heading()
 end
 
+---Demote a markdown heading and all its children (increase level numbers)
+function M.demote_heading_with_children()
+  headings.demote_heading_with_children()
+end
+
+---Promote a markdown heading and all its children (decrease level numbers)
+function M.promote_heading_with_children()
+  headings.promote_heading_with_children()
+end
+
 ---Setup plugin commands
 ---@param opts MarkdownEditorConfig
 function M.setup(opts)
@@ -42,6 +52,18 @@ function M.setup(opts)
     M.promote_heading()
   end, {
     desc = "Promote current markdown heading (decrease level)",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorDemoteHeadingWithChildren", function()
+    M.demote_heading_with_children()
+  end, {
+    desc = "Demote current markdown heading and all its children (increase levels)",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorPromoteHeadingWithChildren", function()
+    M.promote_heading_with_children()
+  end, {
+    desc = "Promote current markdown heading and all its children (decrease levels)",
   })
 end
 
