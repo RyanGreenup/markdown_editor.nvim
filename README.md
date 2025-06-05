@@ -25,18 +25,47 @@ cd my-awesome-plugin
 git remote set-url origin "https://github.com/"${USERNAME}"/my-awesome-plugin.git"
 ```
 
+### 2. Install the Template Plugin
+
+Install the plugin to make sure it works
+
+```lua
+{
+  "ryangreenup/nvim-plugin-template",
+  config = function()
+    require("myplugin").setup({
+      greeting = "Hello from my awesome plugin!",
+      enabled = true,
+    })
+  end,
+}
+```
+
+Then in vim
+
+```vim
+:MyPluginGreet
+
+```
+
+
 ### 2. Rename the Plugin
 
-Replace `myplugin` throughout the codebase with your plugin name:
+Use the provided automation script to rename the plugin:
 
 ```bash
-# Rename the directory
-mv lua/myplugin lua/your-plugin-name
+# Using just (recommended)
+just init my-awesome-plugin your-username https://github.com/your-username/my-awesome-plugin.git
 
-# Update all references in the files
-sed -i 's/myplugin/your-plugin-name/g' lua/your-plugin-name/*.lua
-sed -i 's/MyPlugin/YourPluginName/g' lua/your-plugin-name/*.lua
+# Or directly with Python
+python3 scripts/rename_plugin.py my-awesome-plugin your-username https://github.com/your-username/my-awesome-plugin.git
 ```
+
+This will:
+- Rename the `lua/myplugin` directory to `lua/my_awesome_plugin`
+- Update all references throughout the codebase
+- Set up the git remote origin (if URL provided)
+- Convert between naming conventions (kebab-case, snake_case, CamelCase)
 
 ### 3. Install with lazy.nvim
 
@@ -62,7 +91,10 @@ Add to your Neovim configuration:
 │       ├── init.lua        # Main plugin entry point
 │       ├── config.lua      # Configuration management
 │       └── commands.lua    # User commands
-├── lazy.lua               # Example lazy.nvim package spec
+├── scripts/
+│   └── rename_plugin.py   # Automation script for renaming
+├── justfile               # Task runner with commands
+├── lazy.lua              # Example lazy.nvim package spec
 └── README.md             # This file
 ```
 
@@ -72,6 +104,8 @@ Add to your Neovim configuration:
 - **`config.lua`**: Handles plugin configuration and options
 - **`commands.lua`**: Defines user commands and their implementations
 - **`lazy.lua`**: Example configuration for lazy.nvim users
+- **`justfile`**: Task runner with helpful commands (requires [just](https://github.com/casey/just))
+- **`scripts/rename_plugin.py`**: Automation script for renaming the template
 
 ## Development Guide
 
