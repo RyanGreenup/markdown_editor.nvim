@@ -24,6 +24,16 @@ function M.promote_heading_with_children()
   headings.promote_heading_with_children()
 end
 
+---Insert a sibling heading at the same level as the nearest parent heading
+function M.insert_sibling_heading()
+  headings.insert_sibling_heading()
+end
+
+---Insert a child heading one level deeper than the nearest parent heading
+function M.insert_child_heading()
+  headings.insert_child_heading()
+end
+
 ---Setup plugin commands
 ---@param opts MarkdownEditorConfig
 function M.setup(opts)
@@ -64,6 +74,18 @@ function M.setup(opts)
     M.promote_heading_with_children()
   end, {
     desc = "Promote current markdown heading and all its children (decrease levels)",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorInsertSiblingHeading", function()
+    M.insert_sibling_heading()
+  end, {
+    desc = "Insert a sibling heading at the same level as the nearest parent",
+  })
+  
+  vim.api.nvim_create_user_command("MarkdownEditorInsertChildHeading", function()
+    M.insert_child_heading()
+  end, {
+    desc = "Insert a child heading one level deeper than the nearest parent",
   })
 end
 

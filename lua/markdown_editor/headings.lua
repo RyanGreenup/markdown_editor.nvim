@@ -70,6 +70,23 @@ local function find_child_headings(parent_line, parent_level)
   return child_lines
 end
 
+---Find the parent heading for the current cursor position
+---@return number|nil parent_line The line number of the parent heading
+---@return number|nil parent_level The level of the parent heading
+local function find_parent_heading()
+  local current_line = vim.api.nvim_win_get_cursor(0)[1]
+  
+  -- Search backwards from current line to find a heading
+  for line_num = current_line, 1, -1 do
+    local level = get_heading_level_at_line(line_num)
+    if level then
+      return line_num, level
+    end
+  end
+  
+  return nil, nil
+end
+
 ---Demote a markdown heading (increase level number)
 ---@return boolean success Whether the operation was successful
 function M.demote_heading()
@@ -214,6 +231,85 @@ function M.promote_heading_with_children()
     vim.notify(string.format("Heading and %d children promoted to level %d", child_count, current_level - 1), vim.log.levels.INFO, { title = "MarkdownEditor" })
   else
     vim.notify(string.format("Heading promoted to level %d", current_level - 1), vim.log.levels.INFO, { title = "MarkdownEditor" })
+  end
+  
+  return true
+end
+
+---Insert a sibling heading at the same level as the nearest parent heading
+---@return boolean success Whether the operation was successful
+function M.insert_sibling_heading()
+  local parent_line, parent_level = find_parent_heading()
+  
+  if not parent_line then
+    -- No parent heading found, create a level 1 heading
+    parent_level = 1
+  end
+  
+  local current_line = vim.api.nvim_win_get_cursor(0)[1]
+  local current_col = vim.api.nvim_win_get_cursor(0)[2]
+  
+  -- Create the heading markers
+  local heading_prefix = string.rep("#", parent_level) .. " "
+  
+  -- Get the current line content
+  local line_content = vim.api.nvim_buf_get_lines(0, current_line - 1, current_line, false)[1]
+  
+  -- Insert heading markers at the beginning of the line
+  local new_line = heading_prefix .. line_content
+  vim.api.nvim_buf_set_lines(0, current_line - 1, current_line, false, { new_line })
+  
+  -- Adjust cursor position to account for the added heading markers
+  local new_col = current_col + #heading_prefix
+  vim.api.nvim_win_set_cursor(0, { current_line, new_col })
+  
+  if parent_line then
+    vim.notify(string.format("Created sibling heading at level %d", parent_level), vim.log.levels.INFO, { title = "MarkdownEditor" })
+  else
+    vim.notify("Created level 1 heading (no parent found)", vim.log.levels.INFO, { title = "MarkdownEditor" })
+  end
+  
+  return true
+end
+
+---Insert a child heading one level deeper than the nearest parent heading
+---@return boolean success Whether the operation was successful
+function M.insert_child_heading()
+  local parent_line, parent_level = find_parent_heading()
+  
+  if not parent_line then
+    -- No parent heading found, create a level 1 heading
+    parent_level = 0 -- Will become level 1 after adding 1
+  end
+  
+  local child_level = parent_level + 1
+  
+  if child_level > 6 then
+    vim.notify("Cannot create child heading beyond level 6", vim.log.levels.WARN, { title = "MarkdownEditor" })
+    return false
+  end
+  
+  local current_line = vim.api.nvim_win_get_cursor(0)[1]
+  local current_col = vim.api.nvim_win_get_cursor(0)[2]
+  
+  -- Create the heading markers
+  local heading_prefix = string.rep("#", child_level) .. " "
+  
+  -- Get the current line content
+  local line_content = vim.api.nvim_buf_get_lines(0, current_line - 1, current_line, false)[1]
+  
+  -- Insert heading markers at the beginning of the line
+  local new_line = heading_prefix .. line_content
+  vim.api.nvim_buf_set_lines(0, current_line - 1, current_line, false, { new_line })
+  
+  -- Adjust cursor position to account for the added heading markers
+  local new_col = current_col + #heading_prefix
+  vim.api.nvim_win_set_cursor(0, { current_line, new_col })
+  
+  if parent_line then
+    vim.notify(string.format("Created child heading at level %d", child_level), vim.log.levels.INFO, { title = "MarkdownEditor" })
+  else
+    vim.notify("Created level 1 heading (no parent found)", vim.log.levels.INFO, { title = "MarkdownEditor" })
   end
   
   return true
