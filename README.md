@@ -21,7 +21,7 @@ A minimal, template for creating Neovim plugins in Lua with lazy.nvim support.
 
 ```bash
 PLUGIN_NAME="my-awesome-plugin"
-USERNAME="your-username"
+USERNAME="ryangreenup"
 
 # Clone or copy this repository structure
 git clone https://github.com/RyanGreenup/nvim-plugin-template my-awesome-plugin
@@ -39,7 +39,7 @@ Install the plugin to make sure it works
 {
   "ryangreenup/nvim-plugin-template",
   config = function()
-    require("myplugin").setup({
+    require("markdown_editor").setup({
       greeting = "Hello from my awesome plugin!",
       enabled = true,
     })
@@ -50,7 +50,7 @@ Install the plugin to make sure it works
 Then in vim
 
 ```vim
-:MyPluginGreet
+:MarkdownEditorGreet
 
 ```
 
@@ -61,14 +61,14 @@ Use the provided automation script to rename the plugin:
 
 ```bash
 # Using just (recommended)
-just init my-awesome-plugin your-username https://github.com/your-username/my-awesome-plugin.git
+just init my-awesome-plugin ryangreenup https://github.com/ryangreenup/my-awesome-plugin.git
 
 # Or directly with Python
-python3 scripts/rename_plugin.py my-awesome-plugin your-username https://github.com/your-username/my-awesome-plugin.git
+python3 scripts/rename_plugin.py my-awesome-plugin ryangreenup https://github.com/ryangreenup/my-awesome-plugin.git
 ```
 
 This will:
-- Rename the `lua/myplugin` directory to `lua/my_awesome_plugin`
+- Rename the `lua/markdown_editor` directory to `lua/my_awesome_plugin`
 - Update all references throughout the codebase
 - Set up the git remote origin (if URL provided)
 - Convert between naming conventions (kebab-case, snake_case, CamelCase)
@@ -79,9 +79,9 @@ Add to your Neovim configuration:
 
 ```lua
 {
-  "your-username/your-plugin-name.nvim",
+  "ryangreenup/markdown_editor.nvim",
   config = function()
-    require("your-plugin-name").setup({
+    require("markdown_editor").setup({
       greeting = "Hello from my awesome plugin!",
       enabled = true,
     })
@@ -93,7 +93,7 @@ Add to your Neovim configuration:
 
 ```
 ├── lua/
-│   └── myplugin/
+│   └── markdown_editor/
 │       ├── init.lua        # Main plugin entry point
 │       ├── config.lua      # Configuration management
 │       └── commands.lua    # User commands
@@ -117,8 +117,8 @@ Add to your Neovim configuration:
 
 ### Adding New Features
 
-1. **New Module**: Create a new file in `lua/myplugin/`
-2. **Require in init.lua**: Add `require("myplugin.new-module")`
+1. **New Module**: Create a new file in `lua/markdown_editor/`
+2. **Require in init.lua**: Add `require("markdown_editor.new-module")`
 3. **Initialize in setup()**: Call module's setup function if needed
 
 ### Configuration Pattern
@@ -126,7 +126,7 @@ Add to your Neovim configuration:
 
 ```lua
 -- In your new module
-local config = require("myplugin.config")
+local config = require("markdown_editor.config")
 
 function M.some_function()
   local my_option = config.get("my_option")

@@ -1,11 +1,11 @@
----@class MyPluginInternalConfig
+---@class MarkdownEditorInternalConfig
 local M = {}
 
----@type MyPluginConfig
+---@type MarkdownEditorConfig
 M.options = {}
 
 ---Initialize the configuration
----@param opts MyPluginConfig
+---@param opts MarkdownEditorConfig
 function M.setup(opts)
   M.options = opts
 end

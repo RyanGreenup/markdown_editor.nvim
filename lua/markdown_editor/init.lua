@@ -1,20 +1,20 @@
----@class MyPlugin
----@field config MyPluginConfig
+---@class MarkdownEditor
+---@field config MarkdownEditorConfig
 local M = {}
 
-local config = require("myplugin.config")
-local commands = require("myplugin.commands")
+local config = require("markdown_editor.config")
+local commands = require("markdown_editor.commands")
 
----@class MyPluginConfig
+---@class MarkdownEditorConfig
 ---@field greeting string: The greeting message to display
 ---@field enabled boolean: Whether the plugin is enabled
 local default_config = {
-  greeting = "Hello from MyPlugin!",
+  greeting = "Hello from MarkdownEditor!",
   enabled = true,
 }
 
 ---Setup function called by lazy.nvim
----@param opts? MyPluginConfig: User configuration options
+---@param opts? MarkdownEditorConfig: User configuration options
 function M.setup(opts)
   opts = opts or {}
   

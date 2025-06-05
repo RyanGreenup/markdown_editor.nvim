@@ -1,30 +1,30 @@
----@class MyPluginCommands
+---@class MarkdownEditorCommands
 local M = {}
 
-local config = require("myplugin.config")
+local config = require("markdown_editor.config")
 
 ---Setup plugin commands
----@param opts MyPluginConfig
+---@param opts MarkdownEditorConfig
 function M.setup(opts)
   -- Create a user command for the greeting
-  vim.api.nvim_create_user_command("MyPluginGreet", function()
+  vim.api.nvim_create_user_command("MarkdownEditorGreet", function()
     M.greet()
   end, {
-    desc = "Display a greeting from MyPlugin",
+    desc = "Display a greeting from MarkdownEditor",
   })
   
   -- Create a toggle command
-  vim.api.nvim_create_user_command("MyPluginToggle", function()
+  vim.api.nvim_create_user_command("MarkdownEditorToggle", function()
     M.toggle()
   end, {
-    desc = "Toggle MyPlugin on/off",
+    desc = "Toggle MarkdownEditor on/off",
   })
 end
 
 ---Display a greeting message
 function M.greet()
   local greeting = config.get("greeting")
-  vim.notify(greeting, vim.log.levels.INFO, { title = "MyPlugin" })
+  vim.notify(greeting, vim.log.levels.INFO, { title = "MarkdownEditor" })
 end
 
 ---Toggle the plugin state
@@ -36,7 +36,7 @@ function M.toggle()
   config.options.enabled = new_state
   
   local status = new_state and "enabled" or "disabled"
-  vim.notify("MyPlugin " .. status, vim.log.levels.INFO, { title = "MyPlugin" })
+  vim.notify("MarkdownEditor " .. status, vim.log.levels.INFO, { title = "MarkdownEditor" })
 end
 
 return M

@@ -2,18 +2,18 @@
 -- Copy this configuration to your lazy.nvim setup
 
 return {
-  "ryangreenup/nvim-plugin-template",
+  "ryangreenup/markdown_editor.",
   config = function()
-    require("myplugin").setup({
-      greeting = "Hello from MyPlugin!",
+    require("markdown_editor").setup({
+      greeting = "Hello from MarkdownEditor!",
       enabled = true,
     })
   end,
   -- Optional: specify when to load the plugin
   -- event = "VeryLazy",
-  -- cmd = { "MyPluginGreet", "MyPluginToggle" },
+  -- cmd = { "MarkdownEditorGreet", "MarkdownEditorToggle" },
   -- keys = {
-  --   { "<leader>mg", "<cmd>MyPluginGreet<cr>", desc = "MyPlugin Greet" },
-  --   { "<leader>mt", "<cmd>MyPluginToggle<cr>", desc = "MyPlugin Toggle" },
+  --   { "<leader>mg", "<cmd>MarkdownEditorGreet<cr>", desc = "MarkdownEditor Greet" },
+  --   { "<leader>mt", "<cmd>MarkdownEditorToggle<cr>", desc = "MarkdownEditor Toggle" },
   -- },
 }
