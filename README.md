@@ -74,10 +74,46 @@ This plugin provides tree sitter based keybindings to edit markdown documents. M
         vim.keymap.set("n", "<C-c><C-l>", function()
           require("markdown_editor.links").smart_link()
         end, vim.tbl_extend("force", opts, { desc = "Create or edit markdown link" }))
+        
+        vim.keymap.set("v", "<C-c><C-l>", function()
+          require("markdown_editor.links").smart_link(true)
+        end, vim.tbl_extend("force", opts, { desc = "Create link from selection" }))
       end,
     })
   end,
 }
+```
+
+## Usage Examples
+
+### Link Management
+
+The `<C-c><C-l>` keybinding provides smart link functionality:
+
+**Normal Mode:**
+- On existing link: Edit the link (pre-fills current values)
+- Not on link: Create new link at cursor position
+
+**Visual Mode:**
+- Select text and press `<C-c><C-l>`: Creates a link using the selected text as the description
+
+**Examples:**
+
+```markdown
+# Normal mode - creating new link
+Some text| <- cursor here, press <C-c><C-l>
+# Prompts for description and target
+Some text[My Link](https://example.com)| <- result
+
+# Normal mode - editing existing link
+Check out [old text](old-url)| <- cursor on link, press <C-c><C-l>
+# Prompts with current values pre-filled
+Check out [new text](new-url)| <- result after editing
+
+# Visual mode - link from selection
+Select this text and press <C-c><C-l>
+# Only prompts for target (selected text becomes description)
+[Select this text](https://example.com) <- result
 ```
 
 
