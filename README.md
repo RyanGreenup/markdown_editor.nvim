@@ -1,167 +1,77 @@
-# Neovim Lua Plugin Template
+# Markdown Editor
 
-A minimal, template for creating Neovim plugins in Lua with lazy.nvim support.
+This plugin provides tree sitter based keybindings to edit markdown documents. Motivated by a love of org-mode but a need for markdown.
 
-## Features
+## Quick start (Lazy.nvim)
 
-- Ready to use structure
-- Type annotations
-- Registers Vim Commands
-- Supports lazy.nvim
 
-## Quick Start
 
-1. Create a git repository for the plugin
-2. Clone this repo
-3. Run `just init '<plugin_name>' '<username>' 'https://github.com/<username>/<plugin_name>.nvim'
+| Keybinding | Function | Description |
+|------------|----------|-------------|
+| `<C-CR>` | `insert_child_heading()` | Create a new child heading (one level deeper) |
+| `<M-CR>` | `insert_sibling_heading()` | Create a new sibling heading (same level) |
+| `<M-l>` | `demote_heading_with_children()` | Demote heading and all its children |
+| `<C-l>` | `demote_heading()` | Demote only the current heading |
+| `<M-h>` | `promote_heading_with_children()` | Promote heading and all its children |
+| `<C-h>` | `promote_heading()` | Promote only the current heading |
+| `<M-Up>` | `move_heading_up()` | Swap heading with sibling above |
+| `<M-Down>` | `move_heading_down()` | Swap heading with sibling below |
 
-## Overview
 
-### 1. Use This Template
-
-```bash
-PLUGIN_NAME="my-awesome-plugin"
-USERNAME="ryangreenup"
-
-# Clone or copy this repository structure
-git clone https://github.com/RyanGreenup/nvim-plugin-template my-awesome-plugin
-cd my-awesome-plugin
-
-# Move the git repository to your own upstream repository
-git remote set-url origin "https://github.com/"${USERNAME}"/my-awesome-plugin.git"
-```
-
-### 2. Install the Template Plugin
-
-Install the plugin to make sure it works
 
 ```lua
 {
-  "ryangreenup/nvim-plugin-template",
+  "ryangreenup/markdown_editor.nvim", -- Replace with actual plugin path
   config = function()
     require("markdown_editor").setup({
-      greeting = "Hello from my awesome plugin!",
-      enabled = true,
+      -- Your plugin configuration here
+    })
+
+    -- Create autocmd for markdown keybindings
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = { "markdown", "rmd" },
+      callback = function()
+        local opts = { buffer = true, silent = true }
+
+        -- Heading Creation
+        vim.keymap.set("n", "<C-CR>", function()
+          require("markdown_editor.headings").insert_child_heading()
+        end, vim.tbl_extend("force", opts, { desc = "Create child heading" }))
+
+        vim.keymap.set("n", "<M-CR>", function()
+          require("markdown_editor.headings").insert_sibling_heading()
+        end, vim.tbl_extend("force", opts, { desc = "Create sibling heading" }))
+
+        -- Heading Promotion/Demotion with Children
+        vim.keymap.set("n", "<M-l>", function()
+          require("markdown_editor.headings").demote_heading_with_children()
+        end, vim.tbl_extend("force", opts, { desc = "Demote heading with children" }))
+
+        vim.keymap.set("n", "<M-h>", function()
+          require("markdown_editor.headings").promote_heading_with_children()
+        end, vim.tbl_extend("force", opts, { desc = "Promote heading with children" }))
+
+        -- Single Heading Promotion/Demotion
+        vim.keymap.set("n", "<C-l>", function()
+          require("markdown_editor.headings").demote_heading()
+        end, vim.tbl_extend("force", opts, { desc = "Demote current heading only" }))
+
+        vim.keymap.set("n", "<C-h>", function()
+          require("markdown_editor.headings").promote_heading()
+        end, vim.tbl_extend("force", opts, { desc = "Promote current heading only" }))
+
+        -- Heading Reordering
+        vim.keymap.set("n", "<M-Up>", function()
+          require("markdown_editor.reorder").move_heading_up()
+        end, vim.tbl_extend("force", opts, { desc = "Move heading up" }))
+
+        vim.keymap.set("n", "<M-Down>", function()
+          require("markdown_editor.reorder").move_heading_down()
+        end, vim.tbl_extend("force", opts, { desc = "Move heading down" }))
+      end,
     })
   end,
 }
 ```
-
-Then in vim
-
-```vim
-:MarkdownEditorGreet
-
-```
-
-
-### 2. Rename the Plugin
-
-Use the provided automation script to rename the plugin:
-
-```bash
-# Using just (recommended)
-just init my-awesome-plugin ryangreenup https://github.com/ryangreenup/my-awesome-plugin.git
-
-# Or directly with Python
-python3 scripts/rename_plugin.py my-awesome-plugin ryangreenup https://github.com/ryangreenup/my-awesome-plugin.git
-```
-
-This will:
-- Rename the `lua/markdown_editor` directory to `lua/my_awesome_plugin`
-- Update all references throughout the codebase
-- Set up the git remote origin (if URL provided)
-- Convert between naming conventions (kebab-case, snake_case, CamelCase)
-
-### 3. Install with lazy.nvim
-
-Add to your Neovim configuration:
-
-```lua
-{
-  "ryangreenup/markdown_editor.nvim",
-  config = function()
-    require("markdown_editor").setup({
-      greeting = "Hello from my awesome plugin!",
-      enabled = true,
-    })
-  end,
-}
-```
-
-## Plugin Structure
-
-```
-├── lua/
-│   └── markdown_editor/
-│       ├── init.lua        # Main plugin entry point
-│       ├── config.lua      # Configuration management
-│       └── commands.lua    # User commands
-├── scripts/
-│   └── rename_plugin.py   # Automation script for renaming
-├── justfile               # Task runner with commands
-├── lazy.lua              # Example lazy.nvim package spec
-└── README.md             # This file
-```
-
-### File Breakdown
-
-- **`init.lua`**: Main plugin module with `setup()` function
-- **`config.lua`**: Handles plugin configuration and options
-- **`commands.lua`**: Defines user commands and their implementations
-- **`lazy.lua`**: Example configuration for lazy.nvim users
-- **`justfile`**: Task runner with helpful commands (requires [just](https://github.com/casey/just))
-- **`scripts/rename_plugin.py`**: Automation script for renaming the template
-
-## Development Guide
-
-### Adding New Features
-
-1. **New Module**: Create a new file in `lua/markdown_editor/`
-2. **Require in init.lua**: Add `require("markdown_editor.new-module")`
-3. **Initialize in setup()**: Call module's setup function if needed
-
-### Configuration Pattern
-
-
-```lua
--- In your new module
-local config = require("markdown_editor.config")
-
-function M.some_function()
-  local my_option = config.get("my_option")
-  -- Use the option
-end
-```
-
-### Adding Commands
-
-```lua
--- In commands.lua
-vim.api.nvim_create_user_command("MyNewCommand", function()
-  M.my_new_function()
-end, {
-  desc = "Description of the command",
-})
-```
-
-## Best Practices
-
-1. Prefix all global functions and veriables
-2. Use `vim.tbl_deep_extend()` for merging configs
-3. Handle errors with a warning
-    ```lua
-    local ok, result = pcall(some_function)
-    if not ok then
-      vim.notify("Error: " .. result, vim.log.levels.ERROR)
-      return
-    end
-    ```
-4. Use `vim.schedule()` for jobs that can wait
-5. Cache computations
-6. Write Documentation as you go
-7. Allow default keybindings to be:
-    1. Disabled
-    2. Remapped
 
 
