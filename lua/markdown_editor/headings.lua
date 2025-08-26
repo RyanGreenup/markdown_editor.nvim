@@ -239,6 +239,14 @@ end
 ---Insert a sibling heading at the same level as the nearest parent heading
 ---@return boolean success Whether the operation was successful
 function M.insert_sibling_heading()
+  -- Check if we're on a list item first
+  local lists = require('markdown_editor.lists')
+  local marker, indent_level = lists.get_list_item_info()
+  
+  if marker then
+    return lists.insert_sibling_list_item()
+  end
+  
   local parent_line, parent_level = find_parent_heading()
   
   if not parent_line then
@@ -282,6 +290,14 @@ end
 ---Insert a child heading one level deeper than the nearest parent heading
 ---@return boolean success Whether the operation was successful
 function M.insert_child_heading()
+  -- Check if we're on a list item first
+  local lists = require('markdown_editor.lists')
+  local marker, indent_level = lists.get_list_item_info()
+  
+  if marker then
+    return lists.insert_child_list_item()
+  end
+  
   local parent_line, parent_level = find_parent_heading()
   
   if not parent_line then
