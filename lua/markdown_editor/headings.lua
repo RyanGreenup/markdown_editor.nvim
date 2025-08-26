@@ -90,10 +90,22 @@ end
 ---Demote a markdown heading (increase level number)
 ---@return boolean success Whether the operation was successful
 function M.demote_heading()
+  -- Check if we're on a list item first
+  local lists = require('markdown_editor.lists')
+  local marker, indent_level = lists.get_list_item_info()
+  
+  if marker then
+    local success = lists.demote_list_item()
+    if success then
+      return true
+    end
+    -- If list demotion failed, fall through to heading logic
+  end
+  
   local current_level = M.get_heading_level()
   
   if not current_level then
-    vim.notify("Cursor is not on a markdown heading", vim.log.levels.WARN, { title = "MarkdownEditor" })
+    vim.notify("Cursor is not on a markdown heading or list item", vim.log.levels.WARN, { title = "MarkdownEditor" })
     return false
   end
   
@@ -116,10 +128,22 @@ end
 ---Promote a markdown heading (decrease level number)
 ---@return boolean success Whether the operation was successful
 function M.promote_heading()
+  -- Check if we're on a list item first
+  local lists = require('markdown_editor.lists')
+  local marker, indent_level = lists.get_list_item_info()
+  
+  if marker then
+    local success = lists.promote_list_item()
+    if success then
+      return true
+    end
+    -- If list promotion failed, fall through to heading logic
+  end
+  
   local current_level = M.get_heading_level()
   
   if not current_level then
-    vim.notify("Cursor is not on a markdown heading", vim.log.levels.WARN, { title = "MarkdownEditor" })
+    vim.notify("Cursor is not on a markdown heading or list item", vim.log.levels.WARN, { title = "MarkdownEditor" })
     return false
   end
   
@@ -144,11 +168,23 @@ end
 ---Demote a markdown heading and all its children (increase level numbers)
 ---@return boolean success Whether the operation was successful
 function M.demote_heading_with_children()
+  -- Check if we're on a list item first
+  local lists = require('markdown_editor.lists')
+  local marker, indent_level = lists.get_list_item_info()
+  
+  if marker then
+    local success = lists.demote_list_item_with_children()
+    if success then
+      return true
+    end
+    -- If list demotion failed, fall through to heading logic
+  end
+  
   local line_num = vim.api.nvim_win_get_cursor(0)[1]
   local current_level = M.get_heading_level()
   
   if not current_level then
-    vim.notify("Cursor is not on a markdown heading", vim.log.levels.WARN, { title = "MarkdownEditor" })
+    vim.notify("Cursor is not on a markdown heading or list item", vim.log.levels.WARN, { title = "MarkdownEditor" })
     return false
   end
   
@@ -194,11 +230,23 @@ end
 ---Promote a markdown heading and all its children (decrease level numbers)
 ---@return boolean success Whether the operation was successful
 function M.promote_heading_with_children()
+  -- Check if we're on a list item first
+  local lists = require('markdown_editor.lists')
+  local marker, indent_level = lists.get_list_item_info()
+  
+  if marker then
+    local success = lists.promote_list_item_with_children()
+    if success then
+      return true
+    end
+    -- If list promotion failed, fall through to heading logic
+  end
+  
   local line_num = vim.api.nvim_win_get_cursor(0)[1]
   local current_level = M.get_heading_level()
   
   if not current_level then
-    vim.notify("Cursor is not on a markdown heading", vim.log.levels.WARN, { title = "MarkdownEditor" })
+    vim.notify("Cursor is not on a markdown heading or list item", vim.log.levels.WARN, { title = "MarkdownEditor" })
     return false
   end
   
