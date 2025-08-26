@@ -9,10 +9,12 @@ local commands = require("markdown_editor.commands")
 ---@field greeting string: The greeting message to display
 ---@field enabled boolean: Whether the plugin is enabled
 ---@field list_indent number: Number of spaces for list indentation (default: 2)
+---@field auto_indent_lists boolean: Auto-indent when creating new lines in lists (default: true)
 local default_config = {
   greeting = "Hello from MarkdownEditor!",
   enabled = true,
   list_indent = 2,
+  auto_indent_lists = true,
 }
 
 ---Setup function called by lazy.nvim

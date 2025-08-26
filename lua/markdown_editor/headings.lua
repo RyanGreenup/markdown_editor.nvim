@@ -92,7 +92,7 @@ end
 function M.demote_heading()
   -- Check if we're on a list item first
   local lists = require('markdown_editor.lists')
-  local marker, indent_level = lists.get_list_item_info()
+  local marker, indent_level, is_content = lists.get_list_item_info()
   
   if marker then
     local success = lists.demote_list_item()
@@ -130,7 +130,7 @@ end
 function M.promote_heading()
   -- Check if we're on a list item first
   local lists = require('markdown_editor.lists')
-  local marker, indent_level = lists.get_list_item_info()
+  local marker, indent_level, is_content = lists.get_list_item_info()
   
   if marker then
     local success = lists.promote_list_item()
@@ -170,7 +170,7 @@ end
 function M.demote_heading_with_children()
   -- Check if we're on a list item first
   local lists = require('markdown_editor.lists')
-  local marker, indent_level = lists.get_list_item_info()
+  local marker, indent_level, is_content = lists.get_list_item_info()
   
   if marker then
     local success = lists.demote_list_item_with_children()
@@ -232,7 +232,7 @@ end
 function M.promote_heading_with_children()
   -- Check if we're on a list item first
   local lists = require('markdown_editor.lists')
-  local marker, indent_level = lists.get_list_item_info()
+  local marker, indent_level, is_content = lists.get_list_item_info()
   
   if marker then
     local success = lists.promote_list_item_with_children()
@@ -289,7 +289,7 @@ end
 function M.insert_sibling_heading()
   -- Check if we're on a list item first
   local lists = require('markdown_editor.lists')
-  local marker, indent_level = lists.get_list_item_info()
+  local marker, indent_level, is_content = lists.get_list_item_info()
   
   if marker then
     return lists.insert_sibling_list_item()
@@ -340,7 +340,7 @@ end
 function M.insert_child_heading()
   -- Check if we're on a list item first
   local lists = require('markdown_editor.lists')
-  local marker, indent_level = lists.get_list_item_info()
+  local marker, indent_level, is_content = lists.get_list_item_info()
   
   if marker then
     return lists.insert_child_list_item()
